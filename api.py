@@ -42,11 +42,69 @@ def api_balance():
     
     return USER_NOT_FOUND
 
+@app.route('/api/v1/transaction',methods=['POST'])
+def api_transaction():
+    user_id = _validate_user_id(request.args)
+    if not user_id: 
+        return USER_ID_MISSING
+
+    rc = _validate_transaction(request.form.to_dict())
+    if rc:
+        return transaction_codes[rc]
+
+    rc = _update_balance(user_id,request.form.to_dict())
+    return update_balance_codes[rc]
+
+USER_CANNOT_SPEND = "You cannot spend, this many points."
+
+@app.route('/api/v1/spend',methods=['POST'])
+def api_spend():
+    user_id = _validate_user_id(request.args)
+    if not user_id: 
+        return USER_ID_MISSING
+    if user_id not in balanceOf:
+        return USER_NOT_FOUND
+
+    rc = _validate_spend(request.form.to_dict())
+    if rc:
+        return validate_spend_codes[rc]
+
+    key = request.form.to_dict().keys() 
+    trans = json.loads(list(key)[0])
+    points = trans[POINTS]
+    if not _can_spend(user_id,points):
+        return USER_CANNOT_SPEND
+    
+
+validate_spend_codes = {
+    0 : "Successfully parsed.",
+    1 : "Missing key in spend.",
+    2 : "Invalid value in spend, please ensure points are Integer.",
+    3 : "Please pass one spend in a single attempt.",
+    4 : "Spend in not well formed json object."
+}
+
+
+def _validate_spend(trans):
+    key = trans.keys()
+    if len(trans.keys()) != 1:
+        return 3
+    try:
+        trans = json.loads(list(key)[0])
+    except ValueError:
+        return 4
+    
+    if not (POINTS in trans):
+        return 1
+    
+    if not (isinstance(trans[POINTS],int)):
+        return 2
+    return 0
 
 transaction_codes = {
     0 : "Successfully parsed.",
     1 : "Missing key in transaction, please refer documentation.",
-    2 : "Missing value in transaction, please refer documentation.",
+    2 : "Missing/Invalid value in transaction, please refer documentation.",
     3 : "Please pass one transaction in a single attempt.",
     4 : "Transaction is not a well formed json object.",
     5 : "Invalid timestamp, please refer documentation."
@@ -73,24 +131,6 @@ def _validate_transaction(trans):
 
     return 0
 
-@app.route('/api/v1/transaction',methods=['POST'])
-def api_transaction():
-    user_id = _validate_user_id(request.args)
-    if not user_id: 
-        return USER_ID_MISSING
-
-    rc = _validate_transaction(request.form.to_dict())
-    if rc:
-        return transaction_codes[rc]
-
-    rc = _update_balance(user_id,request.form.to_dict())
-    return update_balance_codes[rc]
-
-update_balance_codes = {
-    "TRANSACTION_SUCCESS" : "Transaction completed successfully.",
-    "TRANSACTION_FAILED" : "Transaction failed."
-}
-
 balanceOf = defaultdict()
 # balanceOf = {
 #  "user_id" : {
@@ -102,6 +142,11 @@ transactionOrderOf = defaultdict()
 # transactionOrderOf = {
 #  "user_id" : heapq([(unix_time_stamp1,payer1),(unix_time_stamp2,payer2),])
 # }
+
+update_balance_codes = {
+    "TRANSACTION_SUCCESS" : "Transaction completed successfully.",
+    "TRANSACTION_FAILED" : "Transaction failed."
+}
 
 def _update_balance(user_id,trans):
     key = trans.keys() 
@@ -129,5 +174,13 @@ def _update_balance(user_id,trans):
         return "TRANSACTION_SUCCESS"
     return "TRANSACTION_FAILED"
     
+def _can_spend(user_id,points):
+    rc = True
+    total_points = 0
+    for k,v in balanceOf[user_id].items():
+        total_points += v
+    if total_points >= points:
+        return rc
+    return not rc
 
 app.run()
