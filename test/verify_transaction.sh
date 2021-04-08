@@ -16,3 +16,12 @@ curl http://127.0.0.1:5000/api/v1/balance?id=123
 curl http://127.0.0.1:5000/api/v1/spend?id=123 -d '{"points":5000}'
 
 curl http://127.0.0.1:5000/api/v1/balance?id=123
+
+
+curl 'http://127.0.0.1:5000/api/v1/spend?id=123' -d '{"points":5000}'
+
+curl 'http://127.0.0.1:5000/api/v1/spend?id=123' -d '{"points":2000}'
+
+curl 'http://127.0.0.1:5000/api/v1/spend?id=123' -d '{"points":2000}'
+
+curl http://127.0.0.1:5000/api/v1/balance?id=123

@@ -12,6 +12,11 @@ ID = "id"
 PAYER = "payer"
 POINTS = "points"
 TIMESTAMP = "timestamp"
+STATUS = "status"
+SUCCESS = "success"
+FAILED = "failed"
+MESSAGE = "message"
+DATA = "data"
 
 # Error Messages 
 USER_ID_MISSING = "User ID is missing in request, please refer documentaion."
@@ -22,7 +27,10 @@ def _validate_user_id(content):
     # Change user id to be varchar
     if ID in content:
         return str(request.args['id'])
-    return None
+    result = defaultdict()
+    result[STATUS] = FAILED
+    result[MESSAGE] = USER_ID_MISSING
+    return jsonify(result)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -30,48 +38,87 @@ def home():
 
 @app.route('/api/v1/balance',methods=['GET'])
 def api_balance():
+
+    result = defaultdict()
     user_id = _validate_user_id(request.args)
-    if not user_id: 
-        return USER_ID_MISSING
+
+    if not isinstance(user_id,str): 
+        return user_id
 
     if user_id in balanceOf:
-        return balanceOf[user_id]
-    
-    return USER_NOT_FOUND
+        result[STATUS] = SUCCESS
+        result[DATA] = balanceOf[user_id]
+        return jsonify(result)
+
+    result[STATUS] = FAILED
+    result[MESSAGE] = USER_NOT_FOUND
+    return jsonify(result)
 
 @app.route('/api/v1/transaction',methods=['POST'])
 def api_transaction():
+
+    result = defaultdict()
     user_id = _validate_user_id(request.args)
-    if not user_id: 
-        return USER_ID_MISSING
+
+    if not isinstance(user_id,str): 
+        return user_id
 
     rc = _validate_transaction(request.form.to_dict())
     if rc:
-        return transaction_codes[rc]
+        result[STATUS] = FAILED
+        result[MESSAGE] = transaction_codes[rc]
+        return jsonify(result)
 
     rc = _update_balance(user_id,request.form.to_dict())
-    return update_balance_codes[rc]
+    if rc == "TRANSACTION_SUCCESS":
+        result[STATUS] = SUCCESS 
+    else:
+        result[STATUS] = FAILED 
+        result[MESSAGE] = update_balance_codes[rc]
+
+    return jsonify(result)
 
 USER_CANNOT_SPEND = "You cannot spend, this many points."
 
 @app.route('/api/v1/spend',methods=['POST'])
 def api_spend():
     user_id = _validate_user_id(request.args)
-    if not user_id: 
-        return USER_ID_MISSING
+    result = defaultdict()
+
+    if not isinstance(user_id,str): 
+        return user_id
+
     if user_id not in balanceOf:
-        return USER_NOT_FOUND
+            result[STATUS] = FAILED
+            result[MESSAGE] = USER_NOT_FOUND
+            return jsonify(result)
 
     rc = _validate_spend(request.form.to_dict())
     if rc:
-        return validate_spend_codes[rc]
+        result[STATUS] = FAILED 
+        result[MESSAGE] = validate_spend_codes[rc]
+        return jsonify(result)
 
     key = request.form.to_dict().keys() 
     trans = json.loads(list(key)[0])
     points = trans[POINTS]
-    if not _can_spend(user_id,points):
-        return USER_CANNOT_SPEND + "Insufficient total"
 
+    if not _can_spend(user_id,points):
+        result[STATUS] = FAILED 
+        result[MESSAGE] = USER_CANNOT_SPEND
+        return  jsonify(result)
+    temp_result = _spend_points_(user_id,points)
+
+    if not temp_result:
+        result[STATUS] = FAILED 
+        result[MESSAGE] = USER_CANNOT_SPEND
+        return jsonify(result) 
+    
+    result[STATUS] = SUCCESS
+    result[DATA] = temp_result
+    return jsonify(result)
+
+def _spend_points_(user_id,points):
     spending_per_payer = defaultdict(int)
     transactions_used = []
     copy_of_transactions = list(transactionOrderOf[user_id])
@@ -98,7 +145,7 @@ def api_spend():
 
     if points != 0:
         transactionOrderOf[user_id] = copy_of_transactions
-        return USER_CANNOT_SPEND + "Negative balance"
+        return None
 
     for used in transactions_used:
         if used in transactionOrderOf[user_id]:
@@ -107,7 +154,7 @@ def api_spend():
     for k,v in spending_per_payer.items():
         balanceOf[user_id][k] += v
 
-    return jsonify(spending_per_payer)
+    return spending_per_payer
 
 validate_spend_codes = {
     0 : "Successfully parsed.",
@@ -197,8 +244,6 @@ def _update_balance(user_id,trans):
     if balanceOf[user_id][current_payer] + current_points > 0:
         balanceOf[user_id][current_payer] += current_points
         if user_id not in transactionOrderOf:
-            #q = []
-            #heapq.heapify(q)
             transactionOrderOf[user_id] = []
         transactionOrderOf[user_id].append((current_time_stamp,current_payer,current_points))
         transactionOrderOf[user_id].sort()
