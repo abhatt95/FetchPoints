@@ -2,16 +2,19 @@ import flask
 from flask import request, jsonify
 import json
 import datetime
+from collections import defaultdict
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
-users = {
-    123 : {
-        "c1" : 1,
-        "c2" : 2
-    }
-}
+balanceOf = defaultdict()
+# user_balance = {
+#  "user_id" : {
+#    "payer1" : balance,
+#    "payer2" : balance
+#   }
+# }
+transactionOrderOf = defaultdict()
 
 # Constants 
 ID = "id"
@@ -24,6 +27,11 @@ USER_ID_MISSING = "User ID is missing in request, please refer documentaion."
 USER_NOT_FOUND = "User specified in query doesn't exist in system."
 
 
+def _validate_user_id(content):
+    # Change user id to be varchar
+    if ID in content:
+        return str(request.args['id'])
+    return None
 
 @app.route('/', methods=['GET'])
 def home():
@@ -31,18 +39,17 @@ def home():
 
 @app.route('/api/v1/balance',methods=['GET'])
 def api_balance():
-    # Look for a User ID to return balance for.
-    if ID in request.args:
-        user_id = int(request.args['id'])
-    else:
+    user_id = _validate_user_id(request.args)
+    if not user_id: 
         return USER_ID_MISSING
 
-    if user_id in users:
-        return users[user_id]
+    if user_id in balanceOf:
+        return balanceOf[user_id]
     
     return USER_NOT_FOUND
 
-transaction_error_codes = {
+
+transaction_codes = {
     0 : "Successfully parsed.",
     1 : "Missing key in transaction, please refer documentation.",
     2 : "Missing value in transaction, please refer documentation.",
@@ -74,7 +81,39 @@ def _validate_transaction(trans):
 
 @app.route('/api/v1/transaction',methods=['POST'])
 def api_transaction():
+    user_id = _validate_user_id(request.args)
+    if not user_id: 
+        return USER_ID_MISSING
+
     rc = _validate_transaction(request.form.to_dict())
-    return transaction_error_codes[rc]
+    if rc:
+        return transaction_codes[rc]
+
+    rc = _update_balance(user_id,request.form.to_dict())
+    return update_balance_codes[rc]
+
+update_balance_codes = {
+    "TRANSACTION_SUCCESS" : "Transaction completed successfully.",
+    "TRANSACTION_FAILED" : "Transaction failed."
+}
+
+def _update_balance(user_id,trans):
+    key = trans.keys() 
+    trans = json.loads(list(key)[0])
+    print(" Transaction :",trans[PAYER],trans[POINTS],trans[TIMESTAMP])
+    
+    current_payer = trans[PAYER]
+    current_points = trans[POINTS]
+    current_time_stamp = trans[TIMESTAMP]
+
+    if user_id not in balanceOf:
+        balanceOf[user_id] = defaultdict(int)
+    if current_payer not in balanceOf[user_id]:
+        balanceOf[user_id][current_payer] = 0
+    if balanceOf[user_id][current_payer] + current_points > 0:
+        balanceOf[user_id][current_payer] += current_points
+        return "TRANSACTION_SUCCESS"
+    return "TRANSACTION_FAILED"
+    
 
 app.run()
