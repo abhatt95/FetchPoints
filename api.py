@@ -2,19 +2,10 @@ import flask
 from flask import request, jsonify
 import json
 import datetime
-from collections import defaultdict
+from collections import defaultdict,_heapq
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-
-balanceOf = defaultdict()
-# user_balance = {
-#  "user_id" : {
-#    "payer1" : balance,
-#    "payer2" : balance
-#   }
-# }
-transactionOrderOf = defaultdict()
 
 # Constants 
 ID = "id"
@@ -44,6 +35,9 @@ def api_balance():
         return USER_ID_MISSING
 
     if user_id in balanceOf:
+        while transactionOrderOf[user_id]:
+            time_stamp,payer = _heapq.heappop(transactionOrderOf[user_id])
+            print(time_stamp,payer)
         return balanceOf[user_id]
     
     return USER_NOT_FOUND
@@ -97,6 +91,18 @@ update_balance_codes = {
     "TRANSACTION_FAILED" : "Transaction failed."
 }
 
+balanceOf = defaultdict()
+# balanceOf = {
+#  "user_id" : {
+#    "payer1" : balance,
+#    "payer2" : balance
+#   }
+# }
+transactionOrderOf = defaultdict()
+# transactionOrderOf = {
+#  "user_id" : heapq([(unix_time_stamp1,payer1),(unix_time_stamp2,payer2),])
+# }
+
 def _update_balance(user_id,trans):
     key = trans.keys() 
     trans = json.loads(list(key)[0])
@@ -104,14 +110,22 @@ def _update_balance(user_id,trans):
     
     current_payer = trans[PAYER]
     current_points = trans[POINTS]
-    current_time_stamp = trans[TIMESTAMP]
-
+    current_time_stamp = datetime.datetime.strptime(trans[TIMESTAMP], '%Y-%m-%dT%H:%M:%SZ').timestamp()
+    print("Time stamp :",current_time_stamp)
     if user_id not in balanceOf:
         balanceOf[user_id] = defaultdict(int)
     if current_payer not in balanceOf[user_id]:
         balanceOf[user_id][current_payer] = 0
     if balanceOf[user_id][current_payer] + current_points > 0:
         balanceOf[user_id][current_payer] += current_points
+        if user_id not in transactionOrderOf:
+            #q = []
+            #heapq.heapify(q)
+            transactionOrderOf[user_id] = []
+        current_q = transactionOrderOf[user_id]
+        _heapq.heappush(current_q,(current_time_stamp,current_payer))
+        transactionOrderOf[user_id] = current_q
+
         return "TRANSACTION_SUCCESS"
     return "TRANSACTION_FAILED"
     
