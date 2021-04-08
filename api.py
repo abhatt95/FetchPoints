@@ -1,5 +1,7 @@
 import flask
 from flask import request, jsonify
+import json
+import datetime
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
@@ -12,7 +14,10 @@ users = {
 }
 
 # Constants 
-ID = 'id'
+ID = "id"
+PAYER = "payer"
+POINTS = "points"
+TIMESTAMP = "timestamp"
 
 # Error Messages 
 USER_ID_MISSING = "User ID is missing in request, please refer documentaion."
@@ -36,5 +41,40 @@ def api_balance():
         return users[user_id]
     
     return USER_NOT_FOUND
+
+transaction_error_codes = {
+    0 : "Successfully parsed.",
+    1 : "Missing key in transaction, please refer documentation.",
+    2 : "Missing value in transaction, please refer documentation.",
+    3 : "Please pass one transaction in a single attempt.",
+    4 : "Transaction is not a well formed json object.",
+    5 : "Invalid timestamp, please refer documentation."
+}
+
+def _validate_transaction(trans):
+    key = trans.keys()
+    if len(trans.keys()) != 1:
+        return 3
+    
+    try:
+        trans = json.loads(list(key)[0])
+    except ValueError:
+        return 4
+    
+    if not (PAYER in trans and POINTS in trans and TIMESTAMP in trans):
+        return 1
+    if not (len(trans[PAYER]) > 0 and  isinstance(trans[POINTS],int) and len(trans[TIMESTAMP]) > 0):
+        return 2
+    try:
+        datetime.datetime.strptime(trans[TIMESTAMP], '%Y-%m-%dT%H:%M:%SZ')
+    except ValueError:
+        return 5
+
+    return 0
+
+@app.route('/api/v1/transaction',methods=['POST'])
+def api_transaction():
+    rc = _validate_transaction(request.form.to_dict())
+    return transaction_error_codes[rc]
 
 app.run()
