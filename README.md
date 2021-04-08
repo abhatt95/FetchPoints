@@ -20,7 +20,7 @@ python3 api.py
 
 All request and repsonse are assumed to be valid JSON format. 
 
-## /balance?id=<user-id>
+## /balance?id=\<user-id>
 ```
 curl http://127.0.0.1:5000/api/v1/balance?id=<user-id>
 ```
