@@ -35,9 +35,6 @@ def api_balance():
         return USER_ID_MISSING
 
     if user_id in balanceOf:
-        while transactionOrderOf[user_id]:
-            time_stamp,payer = _heapq.heappop(transactionOrderOf[user_id])
-            print(time_stamp,payer)
         return balanceOf[user_id]
     
     return USER_NOT_FOUND
@@ -73,8 +70,44 @@ def api_spend():
     trans = json.loads(list(key)[0])
     points = trans[POINTS]
     if not _can_spend(user_id,points):
-        return USER_CANNOT_SPEND
-    
+        return USER_CANNOT_SPEND + "Insufficient total"
+
+    spending_per_payer = defaultdict(int)
+    transactions_used = []
+    copy_of_transactions = list(transactionOrderOf[user_id])
+    for index,(time_stamp,payer,trans_points) in enumerate(transactionOrderOf[user_id]):
+        transactions_used.append((time_stamp,payer,trans_points))    
+        if trans_points > 0:
+            max_points_can_be_deducted = trans_points
+            current_sum = trans_points
+            for f_t,f_pa,f_po in transactionOrderOf[user_id][index+1:]:
+                if f_pa == payer:
+                    current_sum += f_po
+                    max_points_can_be_deducted = min(max_points_can_be_deducted,current_sum)
+
+            if points > max_points_can_be_deducted:
+                points -= max_points_can_be_deducted
+                spending_per_payer[payer] -= max_points_can_be_deducted
+            else:
+                trans_points -= points
+                spending_per_payer[payer] -= points
+                points = 0
+                transactionOrderOf[user_id][index] = (time_stamp,payer,trans_points)
+            if points == 0:
+                break        
+
+    if points != 0:
+        transactionOrderOf[user_id] = copy_of_transactions
+        return USER_CANNOT_SPEND + "Negative balance"
+
+    for used in transactions_used:
+        if used in transactionOrderOf[user_id]:
+            transactionOrderOf[user_id].remove(used)
+
+    for k,v in spending_per_payer.items():
+        balanceOf[user_id][k] += v
+
+    return jsonify(spending_per_payer)
 
 validate_spend_codes = {
     0 : "Successfully parsed.",
@@ -167,9 +200,8 @@ def _update_balance(user_id,trans):
             #q = []
             #heapq.heapify(q)
             transactionOrderOf[user_id] = []
-        current_q = transactionOrderOf[user_id]
-        _heapq.heappush(current_q,(current_time_stamp,current_payer))
-        transactionOrderOf[user_id] = current_q
+        transactionOrderOf[user_id].append((current_time_stamp,current_payer,current_points))
+        transactionOrderOf[user_id].sort()
 
         return "TRANSACTION_SUCCESS"
     return "TRANSACTION_FAILED"
