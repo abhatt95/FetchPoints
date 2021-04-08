@@ -76,6 +76,6 @@ curl 'http://127.0.0.1:5000/api/v1/balance?'
 Messages for failure of balance call and possible resolution -
 |message|resoluton|
 |-----|-----|
-|User ID is missing in request, please refer documentaion.|Please pass a valid user id in call|
-|User specified in query doesn't exist in system.|Balance doesn't exist for this user|
+|User ID is missing in request, please refer documentaion.|Please pass a valid user id in call.|
+|User specified in query doesn't exist in system.|Balance doesn't exist for this user, no resolution can be provided.|
 
