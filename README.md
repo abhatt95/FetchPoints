@@ -2,6 +2,8 @@
 
 API to manage collecting and spending of FETCH points. Part of "Fetch take home challenge".
 
+## Preliminary steps
+
 > Please install/ensure Python 3.7 is available before moving to next steps. [To install Python 3.7](https://www.python.org/downloads/)
 
 1. Clone the repository 
