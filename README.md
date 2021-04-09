@@ -78,6 +78,8 @@ Structure of payer-points -
 ### Example of success -
 ```
 curl 'http://127.0.0.1:5000/api/v1/balance?id=123'
+```
+```
 {
   "data": {
     "DANNON": 2000, 
@@ -91,11 +93,14 @@ curl 'http://127.0.0.1:5000/api/v1/balance?id=123'
 ### Example of failure -
 ```
 curl 'http://127.0.0.1:5000/api/v1/balance?id=abc'
+```
+```
 {
   "message": "User specified in query doesn't exist in system.", 
   "status": "failed"
 }
- 
+```
+```
 curl 'http://127.0.0.1:5000/api/v1/balance?'
 {
   "message": "User ID is missing in request, please refer documentaion.", 
@@ -143,6 +148,8 @@ curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=<user-id> -d '{ "payer":
 ### Example of success -
 ```
 curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }'
+```
+```
 {
   "status": "success"
 }
@@ -151,11 +158,14 @@ curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DA
 ### Example of failure -
 ```
 curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DANNON", "points": 1000, "timestamp":  }'
+```
+```
 {
   "message": "Transaction is not a well formed json object.", 
   "status": "failed"
 }
-
+```
+```
 curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T" }'
 {
   "message": "Invalid timestamp, please refer documentation.", 
@@ -209,6 +219,8 @@ Strcture of points dedcuted per payer -
 ### Example of success -
 ```
  curl 'http://127.0.0.1:5000/api/v1/spend?id=123' -d '{"points":5000}'
+```
+```
 {
   "data": {
     "DANNON": -100, 
@@ -222,6 +234,8 @@ Strcture of points dedcuted per payer -
 ### Example of failure -
 ```
 curl 'http://127.0.0.1:5000/api/v1/spend?id=123' -d '{"points":2000}'
+```
+```
 {
   "message": "You cannot spend, this many points.", 
   "status": "failed"
