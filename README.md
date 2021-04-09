@@ -1,24 +1,38 @@
 # FetchPoints
 
-API to manage collection and spending of FETCH points. Part of "Fetch take home challenge".
+API to manage collecting and spending of FETCH points. Part of "Fetch take home challenge".
+
+> Please install/ensure Python 3.7 is available before moving to next steps.  
 
 
-## Starting virtual environment to satisfy dependency. 
+## Setting up Python virtual environment for service 
+Creating virtual environment
+> [Reasons for using virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#:~:text=virtualenv%20is%20used%20to%20manage,can%20install%20virtualenv%20using%20pip.)
 ```
 virtualenv venv
+```
+Activating environment 
+```
+source venv/bin/activate
+```
+Installing dependency 
+```
+pip install -r requirement.txt
 ```
 
 # Starting service
 
-We spin up a Flask server to handle all request. Run following commands to start service. 
+We spin up a Flask server to handle all request.  
 > To learn more about [Flask](https://flask.palletsprojects.com/en/1.1.x/quickstart/)
+Run following commands to start service.
 ```
 python3 api.py
 ```
 
 # API usage
 
-All request and repsonse are assumed to be valid JSON format. 
+All communication (request and repsonse) are assumed to be well formed JSON object. 
+> Response JSON object for any call will contain "status" key. "status" will have two possible value - "success" , "failed". Incase of "failed" status, object will contain a key "message" who's value will provide detailed failure message. Incase of "success" status, object won't contain "message" key. Based on type of call Object may contain "data" as key and it's value would be result of call.
 
 ## 1. GET balance  
 Returns current points/payer for a particular user.
