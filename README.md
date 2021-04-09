@@ -25,12 +25,12 @@ All request and repsonse are assumed to be valid JSON format.
 curl http://127.0.0.1:5000/api/v1/balance?id=<user-id>
 ```
 
-Required query paramters
+### Required query paramters
 | Option      | Value |
 | ----------- | ----------- |
 | id      | User Id for which balance is requested. Data type: str       |
 
-For a valid key request will return a valid JSON object containing below key/value pairs.
+### For a valid key request will return a valid JSON object containing below key/value pairs.
 
 | Key      | Value | Notes |
 | ----------- | ----------- |----------- |
@@ -46,7 +46,7 @@ Structure of payer-points -
 }
 ```
 
-Example of success -
+### Example of success -
 ```
 curl 'http://127.0.0.1:5000/api/v1/balance?id=123'
 {
@@ -59,7 +59,7 @@ curl 'http://127.0.0.1:5000/api/v1/balance?id=123'
 }
 ```
 
-Example of failure -
+### Example of failure -
 ```
 curl 'http://127.0.0.1:5000/api/v1/balance?id=abc'
 {
@@ -73,7 +73,7 @@ curl 'http://127.0.0.1:5000/api/v1/balance?'
   "status": "failed"
 }
 ```
-Messages for failure of balance call and possible resolution if any -
+### Messages for failure of balance call and possible resolution if any -
 |message|resoluton|
 |-----|-----|
 |User ID is missing in request, please refer documentaion.|Please pass a valid user id in call.|
@@ -84,12 +84,12 @@ Messages for failure of balance call and possible resolution if any -
 curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=123 -d '{ "payer": "<payer-name>", "points": <points-int>, "timestamp": "<timestamp>" }'
 ```
 
-Required query paramters
+### Required query paramters
 | Option      | Value |
 | ----------- | ----------- |
 | id      | User Id for which balance is requested. Data type: str       |
 
-Required key/value pair in data 
+### Required key/value pair in data 
 | Key      | Value |
 | ----------- | ----------- |
 | payer      | Name of payer involved in this transaction. Data type: str       |
@@ -97,7 +97,7 @@ Required key/value pair in data
 | timestamp      | Time stamp of this transaction. Data type: time-stamp in following format - '%Y-%m-%dT%H:%M:%SZ'       |
 
 
-For a valid id and data, request will return a JSON object containing below key/value pairs.
+### For a valid id and data, request will return a JSON object containing below key/value pairs.
 
 | Key      | Value | Notes |
 | ----------- | ----------- |----------- |
@@ -105,7 +105,7 @@ For a valid id and data, request will return a JSON object containing below key/
 | message      | Possible reason for failure. Data type: str   | Only sent incase of failed status|
 
 
-Example of success -
+### Example of success -
 ```
 curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DANNON", "points": 1000, "timestamp": "2020-11-02T14:00:00Z" }'
 {
@@ -113,7 +113,7 @@ curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DA
 }
 ```
 
-Example of failure -
+### Example of failure -
 ```
 curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DANNON", "points": 1000, "timestamp":  }'
 {
@@ -127,7 +127,7 @@ curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DA
   "status": "failed"
 }
 ```
-Messages for failure of transaction call and possible resolution if any -
+### Messages for failure of transaction call and possible resolution if any -
 |message|resoluton|
 |-----|-----|
 |Missing key in transaction, please refer documentation.| Please ensure all required key/val are passed in data for transaction.  |
