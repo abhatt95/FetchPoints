@@ -99,7 +99,7 @@ Saves a single transaction passed as data for a given user.
 ```
 curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=<user-id> -d '{ "payer": "<payer-name>", "points": <points-int>, "timestamp": "<timestamp>" }'
 ```
-[Skip to example](#example-of-success--1) 
+[Skip to example](#example-of-success---1) 
 
 ### Required query paramters
 | Option      | Value |
@@ -159,7 +159,7 @@ Saving points spent by user.
 ```
 curl http://127.0.0.1:5000/api/v1/spend?id=<user-id> -d '{"points":<points-spent>}'
 ```
-[Skip to example](#example-of-success--2) 
+[Skip to example](#example-of-success---2) 
 ### Required query paramters
 | Option      | Value |
 | ----------- | ----------- |
