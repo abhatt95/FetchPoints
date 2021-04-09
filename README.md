@@ -9,15 +9,15 @@ API to manage collecting and spending of FETCH points. Part of "Fetch take home 
 Creating virtual environment
 > [Reasons for using virtual environment](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/#:~:text=virtualenv%20is%20used%20to%20manage,can%20install%20virtualenv%20using%20pip.)
 ```
-virtualenv venv
+python3 -m venv env
 ```
 Activating environment 
 ```
-source venv/bin/activate
+source env/bin/activate
 ```
 Installing dependency 
 ```
-pip install -r requirement.txt
+pip3 install -r requirements.txt 
 ```
 
 # Starting service
