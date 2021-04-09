@@ -139,3 +139,67 @@ curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DA
 |Please pass one transaction in a single attempt.|Only one transaction can be procesed in one attempt, retry by passing single JSON object.|
 |Transaction is not a well formed json object.|Ensure valid JSON object is passed in transaction data.|
 |Invalid timestamp, please refer documentation.|Please pass time stamp of format '%Y-%m-%dT%H:%M:%SZ' , here Y - Year, m - Month, d - Day, H -Hour, M-Month, S-Second|
+
+## 3. POST spend  
+Saving points spent by user. 
+## /api/v1/spend?id=\<user-id>
+```
+curl http://127.0.0.1:5000/api/v1/spend?id=<user-id> -d '{"points":<points-spent>}'
+```
+
+### Required query paramters
+| Option      | Value |
+| ----------- | ----------- |
+| id      | User Id of person spending points. <br/> Data type: str       |
+
+### Required key/value pair in data 
+| Key      | Value |
+| ----------- | ----------- |
+| points      | Number of points being spent by user. <br/> Data type: int       |
+
+
+### For a valid id and data, request will return a JSON object containing below key/value pairs.
+
+| Key      | Value | Notes |
+| ----------- | ----------- |----------- |
+| status      | {"success"\|"failed"} <br/> Data type: str   | Response will always contains a status |
+| message      | Possible reason for failure. <br/> Data type: str   | Only sent incase of failed status|
+| data      | Amount of points dedcuted from each payer in users account. <br/> Data type: JSON   | Only sent incase of success status|
+
+Strcture of points dedcuted per payer -
+```
+{
+"payer1" : -100,
+"payer2" : -200
+}
+```
+
+
+### Example of success -
+```
+ curl 'http://127.0.0.1:5000/api/v1/spend?id=123' -d '{"points":5000}'
+{
+  "data": {
+    "DANNON": -100, 
+    "MILLER COORS": -4700, 
+    "UNILEVER": -200
+  }, 
+  "status": "success"
+}
+```
+
+### Example of failure -
+```
+curl 'http://127.0.0.1:5000/api/v1/spend?id=123' -d '{"points":2000}'
+{
+  "message": "You cannot spend, this many points.", 
+  "status": "failed"
+}
+```
+### Messages for failure of spend call and possible resolution if any -
+|message|resoluton|
+|-----|-----|
+|Missing key in spend.|Please ensure all key/value pairs are passed.|
+|Invalid value in spend, please ensure points are Integer.|Please ensure valid int is passed to spend points.|
+|Spend in not well formed json object.|Please send well formed JSON as data to this call.|
+|Please pass one spend in a single attempt.|Please pass single JSON object wit one points parameter at a given time.|
