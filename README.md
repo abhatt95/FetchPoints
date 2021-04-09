@@ -168,7 +168,8 @@ Deducting points spent by user.
 ```
 curl http://127.0.0.1:5000/api/v1/spend?id=<user-id> -d '{"points":<points-spent>}'
 ```
-> Note: Points are spent accroding to rules prescribed in [File](https://fetch-hiring.s3.us-east-1.amazonaws.com/points.pdf)
+> Note: Points are spent accroding to rules prescribed in [file](https://fetch-hiring.s3.us-east-1.amazonaws.com/points.pdf)
+
 [Skip to example](#example-of-success---2) 
 ### Required query paramters
 | Option      | Value |
