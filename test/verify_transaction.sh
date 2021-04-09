@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# To execute -
+# bash -x verify_transaction.sh
+
 curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=123 -d '{ "payer": "DANNON", "points": 300, "timestamp": "2020-10-31T10:00:00Z" }'
 
 curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=123 -d '{ "payer": "UNILEVER", "points": 200, "timestamp": "2020-10-31T11:00:00Z" }'
