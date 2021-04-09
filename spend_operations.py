@@ -47,7 +47,7 @@ balanceOf = defaultdict()
 # }
 transactionOrderOf = defaultdict()
 # transactionOrderOf = {
-#  "user_id" : heapq([(unix_time_stamp1,payer1),(unix_time_stamp2,payer2),])
+#  "user_id" : sorted([(unix_time_stamp1,payer1),(unix_time_stamp2,payer2),])
 # }
 
 update_balance_codes = {
