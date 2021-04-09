@@ -28,15 +28,15 @@ curl http://127.0.0.1:5000/api/v1/balance?id=<user-id>
 ### Required query paramters
 | Option      | Value |
 | ----------- | ----------- |
-| id      | User Id for which balance is requested. Data type: str       |
+| id      | User Id for which balance is requested. <br/> Data type: str       |
 
 ### For a valid key request will return a valid JSON object containing below key/value pairs.
 
 | Key      | Value | Notes |
 | ----------- | ----------- |----------- |
-| status      | {"success"\|"failed"} Data type: str   | Response will always contains a status |
-| message      | Possible reason for failure. Data type: str   | Only sent incase of failed status|
-| data      |  Payer-points pair. Data type: json   | Only sent incase of success status|
+| status      | {"success"\|"failed"} <br/> Data type: str   | Response will always contains a status |
+| message      | Possible reason for failure. <br/> Data type: str   | Only sent incase of failed status|
+| data      |  Payer-points pair. <br/> Data type: json   | Only sent incase of success status|
 
 Structure of payer-points -
 ```
@@ -87,22 +87,22 @@ curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=123 -d '{ "payer": "<pay
 ### Required query paramters
 | Option      | Value |
 | ----------- | ----------- |
-| id      | User Id for which balance is requested. Data type: str       |
+| id      | User Id for which balance is requested. <br/> Data type: str       |
 
 ### Required key/value pair in data 
 | Key      | Value |
 | ----------- | ----------- |
-| payer      | Name of payer involved in this transaction. Data type: str       |
-| points      | Points modified in this transaction. Data type: int       |
-| timestamp      | Time stamp of this transaction. Data type: time-stamp in following format - '%Y-%m-%dT%H:%M:%SZ'       |
+| payer      | Name of payer involved in this transaction. <br/> Data type: str       |
+| points      | Points modified in this transaction. <br/> Data type: int       |
+| timestamp      | Time stamp of this transaction. <br/> Data type: time-stamp in following format - '%Y-%m-%dT%H:%M:%SZ'       |
 
 
 ### For a valid id and data, request will return a JSON object containing below key/value pairs.
 
 | Key      | Value | Notes |
 | ----------- | ----------- |----------- |
-| status      | {"success"\|"failed"} Data type: str   | Response will always contains a status |
-| message      | Possible reason for failure. Data type: str   | Only sent incase of failed status|
+| status      | {"success"\|"failed"} <br/> Data type: str   | Response will always contains a status |
+| message      | Possible reason for failure. <br/> Data type: str   | Only sent incase of failed status|
 
 
 ### Example of success -
