@@ -3,17 +3,18 @@ from constants import *
 def _spend_points_(user_id,points):
     spending_per_payer = defaultdict(int)
     transactions_used = []
-    copy_of_transactions = list(transactionOrderOf[user_id])
+    transactions_backup = list(transactionOrderOf[user_id])
     for index,(time_stamp,payer,trans_points) in enumerate(transactionOrderOf[user_id]):
         transactions_used.append((time_stamp,payer,trans_points))    
         if trans_points > 0:
             max_points_can_be_deducted = trans_points
             current_sum = trans_points
-            for f_t,f_pa,f_po in transactionOrderOf[user_id][index+1:]:
-                if f_pa == payer:
-                    current_sum += f_po
+            for _,future_payer,future_points in transactionOrderOf[user_id][index+1:]:
+                if future_payer == payer:
+                    current_sum += future_points
                     max_points_can_be_deducted = min(max_points_can_be_deducted,current_sum)
 
+            # max_points_can_be_deducted at this point will either be positive or zero.
             if points > max_points_can_be_deducted:
                 points -= max_points_can_be_deducted
                 spending_per_payer[payer] -= max_points_can_be_deducted
@@ -26,7 +27,7 @@ def _spend_points_(user_id,points):
                 break        
 
     if points != 0:
-        transactionOrderOf[user_id] = copy_of_transactions
+        transactionOrderOf[user_id] = transactions_backup
         return None
 
     for used in transactions_used:

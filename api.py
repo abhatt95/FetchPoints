@@ -86,15 +86,16 @@ def api_spend():
         result[STATUS] = FAILED 
         result[MESSAGE] = USER_CANNOT_SPEND
         return  jsonify(result)
-    temp_result = _spend_points_(user_id,points)
 
-    if not temp_result:
+    data = _spend_points_(user_id,points)
+
+    if not data:
         result[STATUS] = FAILED 
         result[MESSAGE] = USER_CANNOT_SPEND
         return jsonify(result) 
     
     result[STATUS] = SUCCESS
-    result[DATA] = temp_result
+    result[DATA] = data
     return jsonify(result)
 
 app.run()
