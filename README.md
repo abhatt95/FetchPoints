@@ -38,7 +38,7 @@ Returns current points stored for each payer for a particular user.
 ```
 curl http://127.0.0.1:5000/api/v1/balance?id=<user-id>
 ```
-
+[Skip to example](#example-of-success--) 
 ### Required query paramters
 | Option      | Value |
 | ----------- | ----------- |
