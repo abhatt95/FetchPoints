@@ -4,6 +4,15 @@ API to manage collecting and spending of FETCH points. Part of "Fetch take home 
 
 > Please install/ensure Python 3.7 is available before moving to next steps.  
 
+1. Clone the repository 
+```
+git clone https://github.com/abhatt95/FetchPoints.git
+```
+2. Change directory to the newly created folder 
+```
+cd FetchPoints
+```
+
 
 ## Setting up Python virtual environment for service 
 Creating virtual environment
