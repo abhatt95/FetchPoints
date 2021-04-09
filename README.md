@@ -22,7 +22,6 @@ All request and repsonse are assumed to be valid JSON format.
 
 ## 1. GET balance  
 Returns current points/payer for a particular user.
-## /api/v1/balance?id=\<user-id>
 ```
 curl http://127.0.0.1:5000/api/v1/balance?id=<user-id>
 ```
@@ -83,7 +82,6 @@ curl 'http://127.0.0.1:5000/api/v1/balance?'
 
 ## 2. POST transaction  
 Saves a single transaction for a user.
-## /api/v1/transaction?id=\<user-id>
 ```
 curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=<user-id> -d '{ "payer": "<payer-name>", "points": <points-int>, "timestamp": "<timestamp>" }'
 ```
@@ -142,7 +140,6 @@ curl -XPOST 'http://127.0.0.1:5000/api/v1/transaction?id=123' -d '{ "payer": "DA
 
 ## 3. POST spend  
 Saving points spent by user. 
-## /api/v1/spend?id=\<user-id>
 ```
 curl http://127.0.0.1:5000/api/v1/spend?id=<user-id> -d '{"points":<points-spent>}'
 ```
