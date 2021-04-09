@@ -20,7 +20,9 @@ python3 api.py
 
 All request and repsonse are assumed to be valid JSON format. 
 
-## 1. GET balance <br/> /api/v1/balance?id=\<user-id>
+## 1. GET balance  
+Returns current points/payer for a particular user.
+## /api/v1/balance?id=\<user-id>
 ```
 curl http://127.0.0.1:5000/api/v1/balance?id=<user-id>
 ```
@@ -79,7 +81,9 @@ curl 'http://127.0.0.1:5000/api/v1/balance?'
 |User ID is missing in request, please refer documentaion.|Please pass a valid user id in call.|
 |User specified in query doesn't exist in system.|Balance doesn't exist for this user.|
 
-## 2. POST transaction <br/> /api/v1/transaction?id=\<user-id>
+## 2. POST transaction  
+Saves a single transaction for a user.
+## /api/v1/transaction?id=\<user-id>
 ```
 curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=123 -d '{ "payer": "<payer-name>", "points": <points-int>, "timestamp": "<timestamp>" }'
 ```
