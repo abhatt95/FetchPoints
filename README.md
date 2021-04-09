@@ -85,13 +85,13 @@ curl 'http://127.0.0.1:5000/api/v1/balance?'
 Saves a single transaction for a user.
 ## /api/v1/transaction?id=\<user-id>
 ```
-curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=123 -d '{ "payer": "<payer-name>", "points": <points-int>, "timestamp": "<timestamp>" }'
+curl -XPOST http://127.0.0.1:5000/api/v1/transaction?id=<user-id> -d '{ "payer": "<payer-name>", "points": <points-int>, "timestamp": "<timestamp>" }'
 ```
 
 ### Required query paramters
 | Option      | Value |
 | ----------- | ----------- |
-| id      | User Id for which balance is requested. <br/> Data type: str       |
+| id      | User Id for which transaction is posted. <br/> Data type: str       |
 
 ### Required key/value pair in data 
 | Key      | Value |
